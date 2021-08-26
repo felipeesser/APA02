@@ -38,8 +38,8 @@ int** criaM(int n,TG* g){
     return matrix;
 }
 int ***criaMM(int n){
-    int*** M=(int***) malloc(n*sizeof(int**));
-    for(int i=0;i<n;i++){
+    int*** M=(int***) malloc((n+1)*sizeof(int**));
+    for(int i=0;i<=n;i++){
         M[i]=(int**)malloc(n*sizeof(int*));
         for(int j=0;j<n;j++){
             M[i][j]=(int*)malloc(n*sizeof(int));
@@ -56,7 +56,7 @@ void liberam(int** matrix,int n){
     free(matrix);
 }
 void liberamm(int*** matrix,int n){
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i <= n; i++)
     {
         for (int j = 0; j < n; j++)
         {
@@ -78,7 +78,7 @@ void imprimem(int** matrix,int n){
     
 }
 void imprimemm(int*** matrix,int n){
-    for (int k = 0; k < n; k++)
+    for (int k = 0; k <= n; k++)
     {printf("\n");
         for (int i = 0; i < n; i++)
     {   printf("\n");
@@ -106,7 +106,7 @@ void floyd(int n,TG* g,int **c,int*** m){
         }
         
     }
-    for (int k = 1; k < n; k++)
+    for (int k = 1; k <= n; k++)
     {
         for (int i = 0; i <n; i++)
         {
