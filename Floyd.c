@@ -112,7 +112,7 @@ void floyd(int n,TG* g,int **c,int*** m){
         {
             for (int j = 0; j < n; j++)
             {
-                m[k][i][j]=compara(m[k-1][i][j],(m[k-1][i][k]+m[k-1][k][j]));
+                m[k][i][j]=compara(m[k-1][i][j],(m[k-1][i][k-1]+m[k-1][k-1][j]));
             }
             
         }
