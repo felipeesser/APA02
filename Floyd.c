@@ -1,7 +1,31 @@
 #include "TG.h"
+#include "Lista.h"
 #include <limits.h>
 #define MAX INT_MAX
-int** criaM(int n,TG* g){
+
+typedef struct elemmatrix{
+        int n;
+        No* k;
+}EM;
+
+void imprimematrizlista(int n,EM*** mc){
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {   
+            if(i!=j){
+            printf("%d ",i+1);
+            imprimelista(mc[n][i][j].k);
+            printf("%d ",j+1);
+            printf("\n");
+            }
+        }
+        
+    }
+    
+}
+
+int** criaM(int n,TG* g){//matriz inicial do grafo
     int** matrix=(int**) malloc(n*sizeof(int*));
     for(int i=0;i<n;i++){
         matrix[i]=(int*)malloc(n*sizeof(int));
@@ -37,12 +61,12 @@ int** criaM(int n,TG* g){
     }
     return matrix;
 }
-int ***criaMM(int n){
-    int*** M=(int***) malloc(n*sizeof(int**));
-    for(int i=0;i<n;i++){
-        M[i]=(int**)malloc(n*sizeof(int*));
+EM ***criaMM(int n){
+    EM*** M=(EM***) malloc((n+1)*sizeof(EM**));
+    for(int i=0;i<=n;i++){
+        M[i]=(EM**)malloc(n*sizeof(EM*));
         for(int j=0;j<n;j++){
-            M[i][j]=(int*)malloc(n*sizeof(int));
+            M[i][j]=(EM*)malloc(n*sizeof(EM));
         
         }
     }
@@ -55,7 +79,7 @@ void liberam(int** matrix,int n){
     }
     free(matrix);
 }
-void liberamm(int*** matrix,int n){
+void liberamm(EM*** matrix,int n){
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
@@ -66,7 +90,7 @@ void liberamm(int*** matrix,int n){
     }
     free(matrix);
 }
-void imprimem(int** matrix,int n){
+void imprimem(int** matrix,int n){//k=0
     for (int i = 0; i < n; i++)
     {   printf("\n");
         for (int j = 0; j < n; j++)
@@ -75,46 +99,51 @@ void imprimem(int** matrix,int n){
         }
         
     }
+    printf("\n");
+    printf("\n");
     
 }
-void imprimemm(int*** matrix,int n){
-    for (int k = 0; k < n; k++)
-    {printf("\n");
+void imprimemm(EM*** matrix,int n){//k=n
         for (int i = 0; i < n; i++)
     {   printf("\n");
         for (int j = 0; j < n; j++)
         {
-            printf("%d ",matrix[k][i][j]);
+            printf("%d ",matrix[n][i][j].n);
         }
         
     }
-    }
+    printf("\n");
+    printf("\n");
+    
 }
-int compara(int a,int b){
-    if (b>0 && a>b)
-    {
-        return b;
+int compara(int a,int b,int c,EM*** m,int k,int j,int i){
+    if (b!=MAX && c!=MAX && (b+c)<a)
+    {   
+        m[k][i][j].k=m[k-1][i][k-1].k;
+        m[k][i][j].k=insereNo(m[k][i][j].k,k);
+        return b+c;
     }
+    m[k][i][j].k=m[k-1][i][j].k;
     return a;
 }
-void floyd(int n,TG* g,int **c,int*** m){
+void floyd(int n,TG* g,int **c,EM*** m){
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            m[0][i][j]=c[i][j];
+            m[0][i][j].n=c[i][j];
+            m[0][i][j].k=NULL;
         }
         
     }
-    for (int k = 1; k < n; k++)
-    {
+    for (int k = 1; k <= n; k++)
+    {   
         for (int i = 0; i <n; i++)
         {
             for (int j = 0; j < n; j++)
-            {
-                m[k][i][j]=compara(m[k-1][i][j],(m[k-1][i][k]+m[k-1][k][j]));
+            {   
+                m[k][i][j].n=compara(m[k-1][i][j].n,m[k-1][i][k-1].n,m[k-1][k-1][j].n,m,k,j,i);
             }
-            
         }
         
     }
@@ -124,7 +153,7 @@ void floyd(int n,TG* g,int **c,int*** m){
 int main(){
     TG *g=inicializa();
     int** matrix;
-    int*** M=criaMM(4);
+    EM*** M=criaMM(4);
     g=ins_no(g,1);
     g=ins_no(g,2);
     ins_um_sentido(g,1,2,7);
@@ -138,6 +167,8 @@ int main(){
     floyd(4,g,matrix,M);
     imprimem(matrix,4);
     imprimemm(M,4);
+    printf("\n");
+    imprimematrizlista(4,M);
     libera(g);
     liberam(matrix,4);
     liberamm(M,4);
