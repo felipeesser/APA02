@@ -1,7 +1,142 @@
 #include "TG.h"
 #include "Lista.h"
 #include <limits.h>
+#include <math.h>
 #define MAX INT_MAX
+
+/**
+Mapeia uma contagem linear em uma contagem circular; correspondendo o menor
+elemento da contagem linear ao menor elemento da contagem circular.
+
+inicioL = menor valor da sequencia linear
+inicioC = menor valor da sequência circular
+fimC = maior valor da sequência circular
+
+ex.:
+s = _map_circular(e,inicioL=0,inicioC=1,fimC=3);
+
+-------
+e  |  s
+-------
+0  |  1
+1  |  2
+2  |  3
+3  |  1
+4  |  2
+5  |  3
+...|...
+-------
+(e)ntrada|(s)aida
+*/
+int _map_circular(unsigned int entradaL, unsigned int inicioL, unsigned int inicioC, unsigned int fimC)
+{
+    return (entradaL-inicioL)%(fimC-inicioC+1)+inicioC;
+}
+
+int _num_aleatorio(int valorMinimo, int valorMaximo)
+{
+    return (rand() % (valorMaximo - valorMinimo + 1)) + valorMinimo;
+}
+
+double _clamp(double entrada, int valorMinimo, int valorMaximo)
+{
+    double aux = entrada < valorMinimo ? valorMinimo : entrada;
+    return aux > valorMaximo ? valorMaximo : aux;
+}
+
+/**
+Recebe um grafo e insere arcos com a finalidade de transformar o grafo em um
+grafo completo;
+*/
+void _insere_arcos_grafo_completo(TG *g, int ordem, int distMinima, int distMaxima)
+{
+    int distancia=0;
+    size_t i=0, j=0;
+    for (i=0; i<ordem; i++) {
+        for (j=0; j<ordem; j++) {
+            distancia = _num_aleatorio(distMinima, distMaxima);
+            if (i != j) {
+                ins_arco(g, i+1, j+1, distancia);
+            }
+        }
+    }
+}
+
+/**
+Insere ou remove arcos para que o grafo tenha a densidade desejada;
+
+Essa função deve ser usada em conjunto com a função _insere_arcos_grafo_completo
+*/
+void _insere_remove_arcos(TG *g, size_t ordem, double densidade, double thresholdDensidade, int distMinima, int distMaxima)
+{
+    size_t totalArcos=(size_t) ceil(ordem*(ordem-1)*densidade);
+    size_t maximoArcos=ordem*(ordem-1);
+    int distancia=0;
+    int no1Sorteado=0, no2Sorteado=0, no1=0, no2=0;
+    int inseriuArco=0, removeuArco=0;
+    size_t i=0, j=0, arcosInseridos=0, arcosRemovidos=0;
+    while ( (densidade <= thresholdDensidade && arcosInseridos < totalArcos) ||
+            (densidade >  thresholdDensidade && arcosRemovidos < maximoArcos - totalArcos)) {
+        no1Sorteado = _num_aleatorio(1, ordem);
+        no2Sorteado = _num_aleatorio(1, ordem);
+        distancia = _num_aleatorio(distMinima, distMaxima);
+
+        no1=no1Sorteado, no2=no2Sorteado;
+        for (i=0; i<ordem && (!inseriuArco && !removeuArco); i++) {
+            no1 = _map_circular(no1Sorteado+i, 1, 1, ordem);
+            for (j=0; j<ordem && (!inseriuArco && !removeuArco); j++) {
+                no2 = _map_circular(no2Sorteado+j, 1, 1, ordem);
+                if (no1 != no2) {
+                    if (densidade > thresholdDensidade) {
+                        removeuArco = retira_arco(g, no1, no2);
+                    } else {
+                        inseriuArco = ins_arco(g, no1, no2, distancia);
+                    }
+                }
+            }
+        }
+        if (inseriuArco) {
+            inseriuArco = 0;
+            arcosInseridos++;
+            printf("arcosIseridos: %ld\n", arcosInseridos);
+        }
+        if (removeuArco) {
+            removeuArco = 0;
+            arcosRemovidos++;
+            printf("arcosRemovidos: %ld\n", arcosRemovidos);
+        }
+    }
+}
+
+/**
+Retorna um ponteiro para um grafo criado aleatóriamente de ordem, densidade e
+peso dos arcos entre distMinima e distMaxima;
+*/
+TG *cria_grafo_aleatorio(size_t ordem, double densidade, int distMinima, int distMaxima, int seed)
+{
+    densidade = _clamp(densidade, 0.0, 1.0);
+    TG *novo = inicializa();
+    const double thresholdDensidade = 0.6;
+    int distancia=0;
+    size_t i=0, j=0;
+    srand(seed);
+
+    // NOTE - adiciona os nós ao grafo
+    for (i=0; i<ordem; i++) {
+        // rotulos começam em 1
+        novo = ins_no(novo, i+1);
+    }
+
+    // NOTE - faz um grafo completo se a densidade for maior que o threshold
+    if (densidade > thresholdDensidade) {
+        _insere_arcos_grafo_completo(novo, ordem, distMinima, distMaxima);
+    }
+
+    // NOTE - de acordo com o threshold, insere arcos ou remove arcos até atender a densidade
+    _insere_remove_arcos(novo, ordem, densidade, thresholdDensidade, distMinima, distMaxima);
+
+    return novo;
+}
 
 typedef struct elemmatrix{
         int n;
@@ -172,5 +307,12 @@ int main(){
     libera(g);
     liberam(matrix,4);
     liberamm(M,4);
+
+    // TG *g = cria_grafo_aleatorio(1000,0.49,3,5,1);
+    // imprime(g);
+
+    // Para compilar tem que linkar a biblioteca libm
+    // gcc TG.c Lista.c Floyd.c -lm -g -o main
+
     return 0;
 }
