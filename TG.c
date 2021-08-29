@@ -136,3 +136,19 @@ TG *retira_no(TG *g, int no){
   free(p);
   return g;
 }
+
+int ins_arco(TG *g, int no1, int no2,int d)
+{
+  TVIZ *v = busca_aresta(g, no1, no2);
+  if(v) return 0;
+  ins_um_sentido(g, no1, no2, d);
+  return 1;
+}
+
+int retira_arco(TG *g, int no1, int no2)
+{
+  TVIZ* v = busca_aresta(g,no1,no2);
+  if(!v) return 0;
+  retira_um_sentido(g,no1,no2);
+  return 1;
+}

@@ -27,4 +27,15 @@ void ins_aresta(TG *g, int no1, int no2,int d);
 void retira_aresta(TG *g ,int no1, int no2);
 void ins_um_sentido(TG *g, int no1, int no2,int d);
 TG *retira_no(TG *g, int no);
+
+/**
+Tenta inserir um arco no grafo;
+Retorna 1 caso consiga inserir, 0 caso contrário;
+*/
+int ins_arco(TG *g, int no1, int no2,int d);
+/**
+Tenta remover um arco do grafo;
+Retorna 1 caso consiga remover, 0 caso contrário;
+*/
+int retira_arco(TG *g, int no1, int no2);
 #endif
