@@ -1,9 +1,26 @@
 #include "TG.h"
 #include "Lista.h"
 #include <limits.h>
+#include <time.h> 
 #include <math.h>
+#include <sys/resource.h>
 #define MAX INT_MAX
 
+void Tempo_CPU_Sistema(double *seg_CPU_total, double *seg_sistema_total)
+{
+  long seg_CPU, seg_sistema, mseg_CPU, mseg_sistema;
+  struct rusage ptempo;
+
+  getrusage(0,&ptempo);
+
+  seg_CPU = ptempo.ru_utime.tv_sec;
+  mseg_CPU = ptempo.ru_utime.tv_usec;
+  seg_sistema = ptempo.ru_stime.tv_sec;
+  mseg_sistema = ptempo.ru_stime.tv_usec;
+
+ *seg_CPU_total     = (seg_CPU + 0.000001 * mseg_CPU);
+ *seg_sistema_total = (seg_sistema + 0.000001 * mseg_sistema);
+}
 /**
 Mapeia uma contagem linear em uma contagem circular; correspondendo o menor
 elemento da contagem linear ao menor elemento da contagem circular.
@@ -375,9 +392,11 @@ void floyd(int n,TG* g,int **c,EM*** m){
 }
 int main(){
 // TESTE ---------------------
-    TG *g=inicializa();
-    int** matrix;
-    EM*** M=criaMM(4);
+    TG *g;
+    int** matrisI;
+    EM*** M;
+    g=inicializa();
+    M=criaMM(4);
     g=ins_no(g,1);
     g=ins_no(g,2);
     ins_um_sentido(g,1,2,7);
@@ -387,15 +406,14 @@ int main(){
     ins_um_sentido(g,3,4,5);
     ins_um_sentido(g,4,1,4);
     imprime(g);
-    matrix=criaM(4,g);
-    floyd(4,g,matrix,M);
-    imprimem(matrix,4);
+    matrisI=criaM(4,g);
+    floyd(4,g,matrisI,M);
+    imprimem(matrisI,4);
     imprimemm(M,4);
     printf("\n");
     imprime_caminho(M,4);
-    // imprimematrizlista(4,M);
     libera(g);
-    liberam(matrix,4);
+    liberam(matrisI,4);
     liberamm(M,4);
 // ---------------------------
 
@@ -456,28 +474,67 @@ int main(){
 
     // NOTE - para compilar o programa tem que linkar a biblioteca libm
     // gcc TG.c Lista.c Floyd.c -lm -g -o main
-
-    size_t iTamanho, passoTamanho = 50, maxTamanho = 800;
-    double iDensidade = 0.0, passoDensidade = 0.1, maxDensidade = 1.0;
+    double s_CPU_inicial,s_CPU_final,s_total_inicial,s_total_final;
+    double tempo;
+    FILE *f;
+    size_t iTamanho, passoTamanho = 10, maxTamanho = 500;
+    double iDensidade = 0.025, passoDensidade = 0.025, maxDensidade = 1.0;
     size_t iRepeticao;
     // NOTE - para cada tamanho {100, ..., }
+    double fixadensidade=0.7;
     for (iTamanho = 100; iTamanho < maxTamanho; iTamanho += passoTamanho)
-    {
-        // NOTE - para cada desisidade {10, ..., }
-        for (iDensidade = 0.1; iDensidade < maxDensidade; iDensidade += passoDensidade)
-        {
+    {   printf("%ld\n",iTamanho);
+        // densidade fixa
             // NOTE - repita 10 vezes
+            tempo=0;
+            s_CPU_inicial=0,s_CPU_final=0,s_total_inicial=0,s_total_final=0;
             for (iRepeticao = 0; iRepeticao < 10; iRepeticao++)
-            {
-                // TODO - criar grafo;
-                // TODO - criar matrizes auxiliares
-                // TODO - iniciar contagem do tempo
-                // TODO - invocar o algoritmo de floyd
-                // TODO - finalizar a contagem do tempo
+            {   
+                g=inicializa();
+                g=cria_grafo_aleatorio(iTamanho,fixadensidade,1,100,5);
+                matrisI=criaM(iTamanho,g);
+                M=criaMM(iTamanho);
+                Tempo_CPU_Sistema(&s_CPU_inicial, &s_total_inicial);
+                floyd(iTamanho,g,matrisI,M);
+                Tempo_CPU_Sistema(&s_CPU_final, &s_total_final);
+                tempo+=s_CPU_final - s_CPU_inicial;
+                libera(g);
+                liberam(matrisI,iTamanho);
+                liberamm(M,iTamanho);
             }
+            f = fopen("densidadeFixa", "a");
+            fprintf (f,"%ld  %f\n",iTamanho,tempo/10);
+            fclose(f);
             // TODO - calcular a media das 10 repetições
             // TODO - acrescentar a media calculada a um arquivo
+    }
+    size_t tamanhofixo=200;
+    // NOTE - tamanho fixo
+    // NOTE - para cada desisidade {10, ..., }
+    for (iDensidade = 0.025; iDensidade < maxDensidade; iDensidade += passoDensidade)
+    {   printf("%f\n",iDensidade);
+        // NOTE - repita 10 vezes
+        tempo=0;
+        s_CPU_inicial=0,s_CPU_final=0,s_total_inicial=0,s_total_final=0;
+        for (iRepeticao = 0; iRepeticao < 10; iRepeticao++)
+        {
+            g=inicializa();
+            g=cria_grafo_aleatorio(tamanhofixo,iDensidade,1,100,5);
+            matrisI=criaM(tamanhofixo,g);
+            M=criaMM(tamanhofixo);
+            Tempo_CPU_Sistema(&s_CPU_inicial, &s_total_inicial);
+            floyd(tamanhofixo,g,matrisI,M);
+            Tempo_CPU_Sistema(&s_CPU_final, &s_total_final);
+            tempo+=s_CPU_final - s_CPU_inicial;
+            libera(g);
+            liberam(matrisI,tamanhofixo);
+            liberamm(M,tamanhofixo);
         }
+        f = fopen("tamanhoFixo", "a");
+        fprintf (f,"%f  %f\n",iDensidade,tempo/10);
+        fclose(f);
+        // TODO - calcular a media das 10 repetições
+        // TODO - acrescentar a media calculada a um arquivo
     }
 
     return 0;
