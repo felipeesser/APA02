@@ -165,11 +165,6 @@ TG *cria_grafo_aleatorio(size_t ordem, double densidade, int distMinima, int dis
     return novo;
 }
 
-// typedef struct elemmatrix{
-//         int n;
-//         No* k;
-// }EM;
-
 /**
 Tupla para armazenar a distância e o nó usada para o caminho entre dois nós;
 */
@@ -177,23 +172,6 @@ typedef struct elemmatrix{
         int distancia;
         size_t no;
 }EM;
-
-// void imprimematrizlista(int n,EM*** mc){
-//     for (int i = 0; i < n; i++)
-//     {
-//         for (int j = 0; j < n; j++)
-//         {   
-//             if(i!=j){
-//             printf("%d ",i+1);
-//             imprimelista(mc[n][i][j].k);
-//             printf("%d ",j+1);
-//             printf("\n");
-//             }
-//         }
-        
-//     }
-    
-// }
 
 int** criaM(int n,TG* g){//matriz inicial do grafo
     int** matrix=(int**) malloc(n*sizeof(int*));
@@ -290,16 +268,6 @@ void imprimemm(EM*** matrix,int n){//k=n
     printf("\n");
     
 }
-// int compara(int a,int b,int c,EM*** m,int k,int j,int i){
-//     if (b!=MAX && c!=MAX && (b+c)<a)
-//     {   
-//         m[k][i][j].k=m[k-1][i][k-1].k;
-//         m[k][i][j].k=insereNo(m[k][i][j].k,k);
-//         return b+c;
-//     }
-//     m[k][i][j].k=m[k-1][i][j].k;
-//     return a;
-// }
 
 /**
 Retorna o mínimo entre {ij, ik+kj}
@@ -346,7 +314,7 @@ void imprime_caminho(EM ***resFloyd, size_t ordem)
     for (i=0; i<ordem; i++) {
         for (j=0; j<ordem; j++) {
             if (resFloyd[ordem][i][j].distancia != INT_MAX && resFloyd[ordem][i][j].distancia != 0) {
-                printf("%ld até %ld: %ld - ",i+1 ,j+1 ,i+1);
+                printf("%ld ate %ld: %ld - ",i+1 ,j+1 ,i+1);
                 _passa_por(resFloyd,ordem,i,j);
                 printf("%ld\n", j+1);
             }
@@ -363,18 +331,6 @@ void floyd(int n,TG* g,int **c,EM*** m){
         }
         
     }
-    // for (int k = 1; k <= n; k++)
-    // {   
-    //     for (int i = 0; i <n; i++)
-    //     {
-    //         for (int j = 0; j < n; j++)
-    //         {   
-    //             m[k][i][j].n=compara(m[k-1][i][j].n,m[k-1][i][k-1].n,m[k-1][k-1][j].n,m,k,j,i);
-    //         }
-    //     }
-        
-    // }
-
     for (int k = 1; k <= n; k++)
     {
         for (int i = 0; i <n; i++)
