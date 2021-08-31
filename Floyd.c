@@ -297,6 +297,9 @@ void _passa_por(EM ***c, size_t ordem, size_t i, size_t j)
     int passaPor = c[ordem][i][j].no;
     if (passaPor==0) {
         return;
+    } else if (i == passaPor-1 || j == passaPor-1) {
+        printf("(entra em loop...) - ");
+        return;
     } else {
         _passa_por(c, ordem, i, passaPor-1);
         printf("%d - ", passaPor);
@@ -314,7 +317,7 @@ void imprime_caminho(EM ***resFloyd, size_t ordem)
     for (i=0; i<ordem; i++) {
         for (j=0; j<ordem; j++) {
             if (resFloyd[ordem][i][j].distancia != INT_MAX && resFloyd[ordem][i][j].distancia != 0) {
-                printf("%ld ate %ld: %ld - ",i+1 ,j+1 ,i+1);
+                printf("De %ld até %ld (custo: %3d): %ld - ",i+1 ,j+1, resFloyd[ordem][i][j].distancia, i+1);
                 _passa_por(resFloyd,ordem,i,j);
                 printf("%ld\n", j+1);
             }
@@ -339,9 +342,11 @@ void floyd(int n,TG* g,int **c,EM*** m){
             {
                 int dist_ij = m[k-1][i][j].distancia;
                 m[k][i][j].distancia=compara(dist_ij, m[k-1][i][k-1].distancia, m[k-1][k-1][j].distancia);
-                m[k][i][j].no = m[k][i][j].distancia == dist_ij
-                              ? m[k-1][i][j].no
-                              : k;
+                if (m[k][i][j].distancia != dist_ij) {
+                    m[k][i][j].no = k;
+                } else {
+                    m[k][i][j].no = m[k-1][i][j].no;
+                }
             }
         }
     }
@@ -422,14 +427,39 @@ int main(){
 //     liberamm(A, ordem);
 // // ---------------------------
 
+// // grafo qualquer (ciclo negativo) ------------
+//     const int ordem = 5;
+//     TG *g = inicializa();
+//     g = ins_no(g,1);
+//     g = ins_no(g,2);
+//     g = ins_no(g,3);
+//     g = ins_no(g,4);
+//     g = ins_no(g,5);
+//     ins_arco(g,1,2,1);
+//     ins_arco(g,1,3,1);
+//     ins_arco(g,3,2,1);
+//     ins_arco(g,2,4,4);
+//     ins_arco(g,4,3,-6);
+//     ins_arco(g,4,5,1);
+
+//     int **A0 = criaM(ordem,g);
+//     EM ***A = criaMM(ordem);
+
+//     floyd(ordem,g,A0,A);
+//     imprimem(A0,ordem);
+//     imprimemm(A,ordem);
+//     imprime_caminho(A,ordem);
+//     libera(g);
+//     liberam(A0, ordem);
+//     liberamm(A, ordem);
+// // ---------------------------
+
     // EM ***m = criaMM(3);
     // liberamm(m, 3);
 
     // TG *g = cria_grafo_aleatorio(1000,0.49,3,5,1);
     // imprime(g);
 
-    // NOTE - para compilar o programa tem que linkar a biblioteca libm
-    // gcc TG.c Lista.c Floyd.c -lm -g -o main
     double s_CPU_inicial,s_CPU_final,s_total_inicial,s_total_final;
     double tempo;
     FILE *f;
@@ -494,4 +524,6 @@ int main(){
     }
 
     return 0;
+    // NOTE - para compilar o programa tem que linkar a biblioteca libm
+    // gcc TG.c Lista.c Floyd.c -lm -g -o main
 }
