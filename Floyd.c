@@ -346,7 +346,7 @@ void imprime_caminho(EM ***resFloyd, size_t ordem)
     for (i=0; i<ordem; i++) {
         for (j=0; j<ordem; j++) {
             if (resFloyd[ordem][i][j].distancia != INT_MAX && resFloyd[ordem][i][j].distancia != 0) {
-                printf("%ld até %ld: %ld - ",i+1 ,j+1 ,i+1);
+                printf("De %ld até %ld (custo: %3d): %ld - ",i+1 ,j+1, resFloyd[ordem][i][j].distancia, i+1);
                 _passa_por(resFloyd,ordem,i,j);
                 printf("%ld\n", j+1);
             }
