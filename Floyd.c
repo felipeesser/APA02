@@ -329,6 +329,9 @@ void _passa_por(EM ***c, size_t ordem, size_t i, size_t j)
     int passaPor = c[ordem][i][j].no;
     if (passaPor==0) {
         return;
+    } else if (i == passaPor-1 || j == passaPor-1) {
+        printf("(entra em loop...) - ");
+        return;
     } else {
         _passa_por(c, ordem, i, passaPor-1);
         printf("%d - ", passaPor);
