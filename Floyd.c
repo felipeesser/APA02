@@ -504,8 +504,6 @@ int main(){
     // TG *g = cria_grafo_aleatorio(1000,0.49,3,5,1);
     // imprime(g);
 
-    // NOTE - para compilar o programa tem que linkar a biblioteca libm
-    // gcc TG.c Lista.c Floyd.c -lm -g -o main
     double s_CPU_inicial,s_CPU_final,s_total_inicial,s_total_final;
     double tempo;
     FILE *f;
@@ -570,4 +568,6 @@ int main(){
     }
 
     return 0;
+    // NOTE - para compilar o programa tem que linkar a biblioteca libm
+    // gcc TG.c Lista.c Floyd.c -lm -g -o main
 }
