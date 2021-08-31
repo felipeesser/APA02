@@ -471,6 +471,33 @@ int main(){
 //     liberamm(A, ordem);
 // // ---------------------------
 
+// // grafo qualquer (ciclo negativo) ------------
+//     const int ordem = 5;
+//     TG *g = inicializa();
+//     g = ins_no(g,1);
+//     g = ins_no(g,2);
+//     g = ins_no(g,3);
+//     g = ins_no(g,4);
+//     g = ins_no(g,5);
+//     ins_arco(g,1,2,1);
+//     ins_arco(g,1,3,1);
+//     ins_arco(g,3,2,1);
+//     ins_arco(g,2,4,4);
+//     ins_arco(g,4,3,-6);
+//     ins_arco(g,4,5,1);
+
+//     int **A0 = criaM(ordem,g);
+//     EM ***A = criaMM(ordem);
+
+//     floyd(ordem,g,A0,A);
+//     imprimem(A0,ordem);
+//     imprimemm(A,ordem);
+//     imprime_caminho(A,ordem);
+//     libera(g);
+//     liberam(A0, ordem);
+//     liberamm(A, ordem);
+// // ---------------------------
+
     // EM ***m = criaMM(3);
     // liberamm(m, 3);
 
