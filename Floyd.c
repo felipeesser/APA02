@@ -386,9 +386,11 @@ void floyd(int n,TG* g,int **c,EM*** m){
             {
                 int dist_ij = m[k-1][i][j].distancia;
                 m[k][i][j].distancia=compara(dist_ij, m[k-1][i][k-1].distancia, m[k-1][k-1][j].distancia);
-                m[k][i][j].no = m[k][i][j].distancia == dist_ij
-                              ? m[k-1][i][j].no
-                              : k;
+                if (m[k][i][j].distancia != dist_ij) {
+                    m[k][i][j].no = k;
+                } else {
+                    m[k][i][j].no = m[k-1][i][j].no;
+                }
             }
         }
     }
