@@ -1,5 +1,4 @@
 #include "TG.h"
-#include "Lista.h"
 #include <limits.h>
 #include <time.h> 
 #include <math.h>
@@ -272,6 +271,8 @@ void imprimemm(EM*** matrix,int n){//k=n
 /**
 Retorna o mínimo entre {ij, ik+kj}
 */
+
+
 int compara(int ij, int ik, int kj)
 {
     if (ik == INT_MAX || kj == INT_MAX) {
@@ -288,6 +289,8 @@ int compara(int ij, int ik, int kj)
     }
     return ij < ik+kj ? ij : ik+kj;
 }
+
+
 /**
 Função interna ao imprime_caminho que percorre recursivamente os caminhos, e
 imprime cada passo.
@@ -324,6 +327,8 @@ void imprime_caminho(EM ***resFloyd, size_t ordem)
         }
     }
 }
+
+
 void floyd(int n,TG* g,int **c,EM*** m){
     for (int i = 0; i < n; i++)
     {
@@ -351,6 +356,10 @@ void floyd(int n,TG* g,int **c,EM*** m){
         }
     }
 }
+
+
+
+
 int main(){
 // TESTE ---------------------
     TG *g;
@@ -363,6 +372,7 @@ int main(){
     ins_um_sentido(g,1,2,7);
     g=ins_no(g,3);
     g=ins_no(g,4);
+    ins_um_sentido(g,1,3,30);
     ins_um_sentido(g,2,3,11);
     ins_um_sentido(g,3,4,5);
     ins_um_sentido(g,4,1,4);
@@ -467,7 +477,13 @@ int main(){
     double iDensidade = 0.025, passoDensidade = 0.025, maxDensidade = 1.0;
     size_t iRepeticao;
     // NOTE - para cada tamanho {100, ..., }
+    //double fixadensidade=0.2;
+    //double fixadensidade=0.5;
     double fixadensidade=0.7;
+    //double fixadensidade=0.9;
+    //double fixadensidade=0.1;
+    //double fixadensidade=0.4;
+
     for (iTamanho = 100; iTamanho < maxTamanho; iTamanho += passoTamanho)
     {   printf("%ld\n",iTamanho);
         // densidade fixa
@@ -488,7 +504,7 @@ int main(){
                 liberam(matrisI,iTamanho);
                 liberamm(M,iTamanho);
             }
-            f = fopen("densidadeFixa", "a");
+            f = fopen("densidadeFixa(0.7)", "a");
             fprintf (f,"%ld  %f\n",iTamanho,tempo/10);
             fclose(f);
             // TODO - calcular a media das 10 repetições
@@ -516,7 +532,7 @@ int main(){
             liberam(matrisI,tamanhofixo);
             liberamm(M,tamanhofixo);
         }
-        f = fopen("tamanhoFixo", "a");
+        f = fopen("tamanhoFixo(200)", "a");
         fprintf (f,"%f  %f\n",iDensidade,tempo/10);
         fclose(f);
         // TODO - calcular a media das 10 repetições
