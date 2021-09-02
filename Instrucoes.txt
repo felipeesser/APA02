@@ -1,6 +1,6 @@
 para gerar os registros das tempos de execução e gerar um caso de teste basta compilar e executar os arquivos "Floyd.c" e "TG.c":
 
-gcc TG.c Lista.c Floyd.c -lm -g -o main
+gcc TG.c Floyd.c -lm -g -o main
 ./main
 
 Os arquivos contidos na pasta "dados_gerados" do repositório correspondem ao registro dos tempos de execução  do algoritmo de Floyd com grafos de 100 a 490 nós, tamanho de passo igual a 10 nós por medição, e com as seguintes densidades: 10%,20%,40%,50%,70%,90%.
